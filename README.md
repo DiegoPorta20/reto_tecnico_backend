@@ -1,59 +1,484 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+﻿# Módulo de Trabajadores — Backend API REST
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+API REST construida con **Laravel 12** y **MySQL** que expone endpoints JSON para gestionar el módulo de trabajadores: listar, registrar, editar, ver detalle, desactivar y reactivar trabajadores.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Tabla de contenidos
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+1. [Requisitos previos](#1-requisitos-previos)
+2. [Clonar o descargar el proyecto](#2-clonar-o-descargar-el-proyecto)
+3. [Configurar variables de entorno](#3-configurar-variables-de-entorno)
+4. [Crear la base de datos](#4-crear-la-base-de-datos)
+5. [Instalar dependencias](#5-instalar-dependencias)
+6. [Ejecutar migraciones y datos de ejemplo](#6-ejecutar-migraciones-y-datos-de-ejemplo)
+7. [Levantar el servidor de desarrollo](#7-levantar-el-servidor-de-desarrollo)
+8. [Endpoints disponibles](#8-endpoints-disponibles)
+9. [Ejemplos de peticiones y respuestas](#9-ejemplos-de-peticiones-y-respuestas)
+10. [Validaciones aplicadas](#10-validaciones-aplicadas)
+11. [Estructura del proyecto](#11-estructura-del-proyecto)
+12. [Solución de problemas comunes](#12-solución-de-problemas-comunes)
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## 1. Requisitos previos
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+Antes de comenzar, asegúrese de tener instalado lo siguiente:
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+| Herramienta | Versión mínima | Verificar con |
+|---|---|---|
+| PHP | 8.2 | `php -v` |
+| Composer | 2.x | `composer -V` |
+| MySQL | 8.0 | `mysql --version` |
+| Git | cualquiera | `git --version` |
 
-## Laravel Sponsors
+> **Extensiones PHP requeridas:** `pdo_mysql`, `mbstring`, `openssl`, `tokenizer`, `xml`, `ctype`, `json`, `bcmath`.
+> En Windows con XAMPP o Laragon estas extensiones ya vienen habilitadas por defecto.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+---
 
-### Premium Partners
+## 2. Clonar o descargar el proyecto
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### Opción A — Con Git
 
-## Contributing
+```bash
+git clone <URL-del-repositorio> reto_tecnico
+cd reto_tecnico
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Opción B — Descarga ZIP
 
-## Code of Conduct
+1. Descargar el ZIP del repositorio.
+2. Extraer la carpeta.
+3. Abrir una terminal dentro de la carpeta extraída.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+---
 
-## Security Vulnerabilities
+## 3. Configurar variables de entorno
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Copiar el archivo de ejemplo y editarlo:
 
-## License
+```bash
+# Linux / macOS
+cp .env.example .env
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+# Windows (PowerShell)
+Copy-Item .env.example .env
+```
+
+Abrir `.env` y ajustar el bloque de base de datos:
+
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=reto_tecnico
+DB_USERNAME=root
+DB_PASSWORD=tu_contraseña
+```
+
+> Si usa XAMPP la contraseña suele estar vacía (`DB_PASSWORD=`).
+> Si usa Laragon la contraseña por defecto también es vacía.
+
+---
+
+## 4. Crear la base de datos
+
+### Opción A — Script SQL (recomendado)
+
+Importar el script `database/script_sql.sql` que crea la base de datos, tablas y datos de ejemplo:
+
+```bash
+mysql -u root -p < database/script_sql.sql
+```
+
+O abrirlo en **phpMyAdmin → Importar → Seleccionar archivo** y ejecutar.
+
+> Si usa esta opción, el paso 6 (migraciones) puede omitirse ya que las tablas ya estarán creadas.
+
+### Opción B — Solo crear la BD vacía
+
+Si va a usar las migraciones de Laravel (paso 6), solo cree la base de datos:
+
+```sql
+CREATE DATABASE reto_tecnico CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+```
+
+---
+
+## 5. Instalar dependencias
+
+```bash
+composer install
+```
+
+### Nota especial para Windows con OneDrive
+
+Si la carpeta del proyecto está dentro de **OneDrive**, es necesario quitar el atributo de solo lectura que OneDrive aplica a los directorios. Ejecutar esto **desde cmd.exe** (no PowerShell):
+
+```cmd
+attrib -R "bootstrap\cache" /S /D
+attrib -R "storage" /S /D
+```
+
+Esto es necesario porque PHP verifica el atributo de solo lectura de Windows para determinar si un directorio es escribible. Sin este paso, `composer install` y `php artisan` fallarán con el error `bootstrap\cache directory must be present and writable`.
+
+---
+
+## 6. Ejecutar migraciones y datos de ejemplo
+
+> Omitir este paso si ya se importó el `script_sql.sql` en el paso 4.
+
+### 6.1 Generar la clave de aplicación
+
+```bash
+php artisan key:generate
+```
+
+### 6.2 Ejecutar migraciones y seeders en un solo comando
+
+```bash
+php artisan migrate --seed
+```
+
+Esto crea las tablas e inserta los datos de ejemplo. Si desea hacerlo por separado:
+
+```bash
+php artisan migrate
+php artisan db:seed --class=TrabajadoresSeeder
+```
+
+> **Tablas creadas:**
+> - `cargos` — tipos de cargo
+> - `proyectos` — proyectos disponibles
+> - `trabajadores` — empleados con relación a cargo y proyecto
+
+---
+
+## 7. Levantar el servidor de desarrollo
+
+```bash
+php artisan serve
+```
+
+La API quedará disponible en: **`http://127.0.0.1:8000`**
+
+Para especificar un puerto diferente:
+
+```bash
+php artisan serve --port=8080
+```
+
+---
+
+## 8. Endpoints disponibles
+
+Todas las rutas tienen el prefijo `/api`.
+
+| Método | Endpoint | Descripción |
+|---|---|---|
+| `GET` | `/api/trabajadores` | Listar todos los trabajadores |
+| `POST` | `/api/trabajadores` | Registrar un nuevo trabajador |
+| `GET` | `/api/trabajadores/{id}` | Ver detalle de un trabajador |
+| `PUT` | `/api/trabajadores/{id}` | Editar un trabajador |
+| `DELETE` | `/api/trabajadores/{id}` | Desactivar (baja lógica) un trabajador |
+| `PATCH` | `/api/trabajadores/{id}/restaurar` | Reactivar un trabajador desactivado |
+| `GET` | `/api/cargos` | Listar todos los cargos |
+| `GET` | `/api/proyectos` | Listar todos los proyectos |
+
+> **Importante:** `DELETE` no elimina el registro físicamente. Cambia `activo = false` (baja lógica). El trabajador permanece en la base de datos y puede reactivarse con `PATCH /restaurar`.
+
+---
+
+## 9. Ejemplos de peticiones y respuestas
+
+> Se recomienda probar con **Postman**. Siempre incluir el header `Accept: application/json`.
+
+---
+
+### GET /api/trabajadores
+
+**Response `200 OK`:**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": 1,
+      "nombre": "Carlos",
+      "apellido": "Ramírez",
+      "nombre_completo": "Ramírez, Carlos",
+      "dni": "12345678",
+      "email": "c.ramirez@empresa.com",
+      "telefono": "987654321",
+      "cargo_id": 1,
+      "cargo": "Desarrollador Backend",
+      "proyecto_id": 1,
+      "proyecto": "Portal Web Corporativo",
+      "activo": true,
+      "created_at": "19/03/2026 10:00",
+      "updated_at": "19/03/2026 10:00"
+    }
+  ]
+}
+```
+
+---
+
+### POST /api/trabajadores
+
+**Headers:**
+```
+Content-Type: application/json
+Accept: application/json
+```
+
+**Body (raw JSON):**
+```json
+{
+  "nombre":      "Laura",
+  "apellido":    "Pérez",
+  "dni":         "77889900",
+  "email":       "l.perez@empresa.com",
+  "telefono":    "912345678",
+  "cargo_id":    2,
+  "proyecto_id": 3
+}
+```
+
+**Response `201 Created`:**
+```json
+{
+  "success": true,
+  "message": "Trabajador registrado correctamente.",
+  "data": {
+    "id": 6,
+    "nombre": "Laura",
+    "apellido": "Pérez",
+    "nombre_completo": "Pérez, Laura",
+    "dni": "77889900",
+    "email": "l.perez@empresa.com",
+    "telefono": "912345678",
+    "cargo_id": 2,
+    "cargo": "Desarrollador Frontend",
+    "proyecto_id": 3,
+    "proyecto": "Sistema ERP Interno",
+    "activo": true,
+    "created_at": "19/03/2026 10:05",
+    "updated_at": "19/03/2026 10:05"
+  }
+}
+```
+
+---
+
+### GET /api/trabajadores/{id}
+
+**Response `200 OK`:** igual al objeto individual del listado.
+
+---
+
+### PUT /api/trabajadores/{id}
+
+**Body (raw JSON):**
+```json
+{
+  "nombre":      "Carlos",
+  "apellido":    "Ramírez Vega",
+  "dni":         "12345678",
+  "email":       "c.ramirez@empresa.com",
+  "telefono":    "999888777",
+  "cargo_id":    1,
+  "proyecto_id": 2,
+  "activo":      true
+}
+```
+
+**Response `200 OK`:**
+```json
+{
+  "success": true,
+  "message": "Trabajador actualizado correctamente.",
+  "data": { "..." }
+}
+```
+
+---
+
+### DELETE /api/trabajadores/{id}
+
+**Response `200 OK`:**
+```json
+{
+  "success": true,
+  "message": "Trabajador desactivado correctamente."
+}
+```
+
+---
+
+### PATCH /api/trabajadores/{id}/restaurar
+
+**Response `200 OK`:**
+```json
+{
+  "success": true,
+  "message": "Trabajador reactivado correctamente."
+}
+```
+
+---
+
+### Response de error de validación `422`
+
+```json
+{
+  "success": false,
+  "message": "Error de validación.",
+  "errors": {
+    "dni": ["El DNI ya está registrado."],
+    "email": ["El correo electrónico no tiene un formato válido."]
+  }
+}
+```
+
+---
+
+## 10. Validaciones aplicadas
+
+### Al registrar — POST /api/trabajadores
+
+| Campo | Reglas |
+|---|---|
+| `nombre` | Requerido, texto, máx. 100 caracteres |
+| `apellido` | Requerido, texto, máx. 100 caracteres |
+| `dni` | Requerido, máx. 20 caracteres, **único** en la tabla |
+| `email` | Opcional, formato email válido, **único** en la tabla |
+| `telefono` | Opcional, máx. 20 caracteres |
+| `cargo_id` | Requerido, entero, debe **existir** en tabla `cargos` |
+| `proyecto_id` | Requerido, entero, debe **existir** en tabla `proyectos` |
+
+### Al editar — PUT /api/trabajadores/{id}
+
+Las mismas reglas anteriores. Para `dni` y `email`, la validación de unicidad ignora el registro actual (para no bloquearse a sí mismo al editar sin cambiar el valor).
+
+Campo adicional:
+
+| Campo | Reglas |
+|---|---|
+| `activo` | Opcional, booleano (`true` / `false`) |
+
+---
+
+## 11. Estructura del proyecto
+
+```
+reto_tecnico/
+├── app/
+│   ├── Http/
+│   │   ├── Controllers/
+│   │   │   ├── TrabajadorController.php    ← CRUD completo de trabajadores
+│   │   │   ├── CargoController.php         ← Listar cargos
+│   │   │   └── ProyectoController.php      ← Listar proyectos
+│   │   └── Requests/
+│   │       ├── StoreTrabajadorRequest.php  ← Validación al crear
+│   │       └── UpdateTrabajadorRequest.php ← Validación al editar
+│   └── Models/
+│       ├── Trabajador.php                  ← Relaciones con Cargo y Proyecto
+│       ├── Cargo.php
+│       └── Proyecto.php
+├── database/
+│   ├── migrations/
+│   │   ├── 2026_03_19_000001_create_cargos_table.php
+│   │   ├── 2026_03_19_000002_create_proyectos_table.php
+│   │   └── 2026_03_19_000003_create_trabajadores_table.php
+│   ├── seeders/
+│   │   ├── DatabaseSeeder.php
+│   │   └── TrabajadoresSeeder.php          ← Datos de ejemplo
+│   └── script_sql.sql                      ← Script SQL completo alternativo
+├── routes/
+│   ├── api.php                             ← Todas las rutas de la API
+│   └── web.php
+├── bootstrap/
+│   └── app.php                             ← Registro de rutas API
+├── .env                                    ← Variables de entorno (no subir a Git)
+└── .env.example                            ← Plantilla de variables de entorno
+```
+
+---
+
+## 12. Solución de problemas comunes
+
+### `bootstrap/cache directory must be present and writable`
+
+Ocurre en Windows cuando el proyecto está en OneDrive. Ejecutar en **cmd.exe**:
+
+```cmd
+attrib -R "bootstrap\cache" /S /D
+attrib -R "storage" /S /D
+```
+
+---
+
+### `php artisan key:generate` no encuentra `.env`
+
+```powershell
+Copy-Item .env.example .env
+```
+
+---
+
+### Error de conexión a la base de datos
+
+1. Verificar que MySQL esté corriendo (en XAMPP: panel → Start MySQL).
+2. Revisar `DB_HOST`, `DB_PORT`, `DB_USERNAME` y `DB_PASSWORD` en el `.env`.
+3. Confirmar que la base de datos `reto_tecnico` existe.
+
+---
+
+### `SQLSTATE[HY000] [1049] Unknown database 'reto_tecnico'`
+
+La base de datos no existe. Crearla antes de migrar:
+
+```sql
+CREATE DATABASE reto_tecnico CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+```
+
+---
+
+### Error 404 en las rutas `/api/...`
+
+Asegurarse de que el servidor esté corriendo con `php artisan serve` y de que la URL base sea `http://127.0.0.1:8000`.
+
+---
+
+### Las respuestas llegan como HTML en lugar de JSON
+
+Agregar el header en Postman o en el cliente HTTP:
+
+```
+Accept: application/json
+```
+
+---
+
+## Datos de ejemplo incluidos
+
+Tras ejecutar el seeder (o importar el SQL), la base de datos contendrá:
+
+**Cargos (7):**
+Desarrollador Backend, Desarrollador Frontend, Diseñador UX/UI, Analista de QA, Project Manager, DevOps Engineer, Analista de Datos.
+
+**Proyectos (5):**
+Portal Web Corporativo, App Móvil de Ventas, Sistema ERP Interno, Plataforma E-commerce, Data Warehouse Reporting.
+
+**Trabajadores (5):**
+
+| # | Nombre | Cargo | Proyecto | Activo |
+|---|---|---|---|---|
+| 1 | Carlos Ramírez | Desarrollador Backend | Portal Web Corporativo | Sí |
+| 2 | Ana Torres | Desarrollador Frontend | Portal Web Corporativo | Sí |
+| 3 | Luis Mendoza | Project Manager | App Móvil de Ventas | Sí |
+| 4 | María García | Diseñador UX/UI | Plataforma E-commerce | Sí |
+| 5 | Pedro Quispe | Analista de QA | Sistema ERP Interno | No |
+
