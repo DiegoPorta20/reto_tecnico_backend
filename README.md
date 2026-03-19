@@ -9,9 +9,9 @@ API REST construida con **Laravel 12** y **MySQL** que expone endpoints JSON par
 1. [Requisitos previos](#1-requisitos-previos)
 2. [Clonar o descargar el proyecto](#2-clonar-o-descargar-el-proyecto)
 3. [Configurar variables de entorno](#3-configurar-variables-de-entorno)
-4. [Crear la base de datos](#4-crear-la-base-de-datos)
-5. [Instalar dependencias](#5-instalar-dependencias)
-6. [Ejecutar migraciones y datos de ejemplo](#6-ejecutar-migraciones-y-datos-de-ejemplo)
+4. [Instalar dependencias](#4-instalar-dependencias)
+5. [Importar la base de datos](#5-importar-la-base-de-datos)
+6. [Generar la clave de aplicación](#6-generar-la-clave-de-aplicación)
 7. [Levantar el servidor de desarrollo](#7-levantar-el-servidor-de-desarrollo)
 8. [Endpoints disponibles](#8-endpoints-disponibles)
 9. [Ejemplos de peticiones y respuestas](#9-ejemplos-de-peticiones-y-respuestas)
@@ -82,31 +82,7 @@ DB_PASSWORD=tu_contraseña
 
 ---
 
-## 4. Crear la base de datos
-
-### Opción A — Script SQL (recomendado)
-
-Importar el script `database/script_sql.sql` que crea la base de datos, tablas y datos de ejemplo:
-
-```bash
-mysql -u root -p < database/script_sql.sql
-```
-
-O abrirlo en **phpMyAdmin → Importar → Seleccionar archivo** y ejecutar.
-
-> Si usa esta opción, el paso 6 (migraciones) puede omitirse ya que las tablas ya estarán creadas.
-
-### Opción B — Solo crear la BD vacía
-
-Si va a usar las migraciones de Laravel (paso 6), solo cree la base de datos:
-
-```sql
-CREATE DATABASE reto_tecnico CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-```
-
----
-
-## 5. Instalar dependencias
+## 4. Instalar dependencias
 
 ```bash
 composer install
@@ -125,33 +101,38 @@ Esto es necesario porque PHP verifica el atributo de solo lectura de Windows par
 
 ---
 
-## 6. Ejecutar migraciones y datos de ejemplo
+## 5. Importar la base de datos
 
-> Omitir este paso si ya se importó el `script_sql.sql` en el paso 4.
+El proyecto incluye el script `database/script_sql.sql` que crea la base de datos, las tres tablas y carga los datos de ejemplo en un solo paso.
 
-### 6.1 Generar la clave de aplicación
+### Opción A — phpMyAdmin (recomendado para XAMPP/Laragon)
+
+1. Abrir **phpMyAdmin** en el navegador (`http://localhost/phpmyadmin`).
+2. Ir a la pestaña **Importar**.
+3. Hacer clic en **Seleccionar archivo** y elegir `database/script_sql.sql`.
+4. Clic en **Continuar**.
+
+### Opción B — Línea de comandos
+
+```bash
+mysql -u root -p < database/script_sql.sql
+```
+
+> Al terminar la importación verá una tabla de verificación con el conteo de registros:
+>
+> | tabla | registros |
+> |---|---|
+> | cargos | 7 |
+> | proyectos | 5 |
+> | trabajadores | 5 |
+
+---
+
+## 6. Generar la clave de aplicación
 
 ```bash
 php artisan key:generate
 ```
-
-### 6.2 Ejecutar migraciones y seeders en un solo comando
-
-```bash
-php artisan migrate --seed
-```
-
-Esto crea las tablas e inserta los datos de ejemplo. Si desea hacerlo por separado:
-
-```bash
-php artisan migrate
-php artisan db:seed --class=TrabajadoresSeeder
-```
-
-> **Tablas creadas:**
-> - `cargos` — tipos de cargo
-> - `proyectos` — proyectos disponibles
-> - `trabajadores` — empleados con relación a cargo y proyecto
 
 ---
 
@@ -388,14 +369,7 @@ reto_tecnico/
 │       ├── Cargo.php
 │       └── Proyecto.php
 ├── database/
-│   ├── migrations/
-│   │   ├── 2026_03_19_000001_create_cargos_table.php
-│   │   ├── 2026_03_19_000002_create_proyectos_table.php
-│   │   └── 2026_03_19_000003_create_trabajadores_table.php
-│   ├── seeders/
-│   │   ├── DatabaseSeeder.php
-│   │   └── TrabajadoresSeeder.php          ← Datos de ejemplo
-│   └── script_sql.sql                      ← Script SQL completo alternativo
+│   └── script_sql.sql                      ← Script SQL (tablas + datos de ejemplo)
 ├── routes/
 │   ├── api.php                             ← Todas las rutas de la API
 │   └── web.php
